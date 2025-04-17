@@ -11,12 +11,14 @@ An AWS Labs Model Context Protocol (MCP) server for kendra-index-mcpserver
 * Document in the top level `../../README.md`
 * Reference within the `../../doc/index.md`
 * Add include to `../../doc/servers/`
-Example usage MCP COnfiguration:
+
+
+Example usage MCP Configuration:
 "awslabs.aws-kendra-index-mcp-server": {
       "command": "uv",
       "args": [
         "--directory",
-        "/absolute path to mcp repo/src/kendra-index-mcpserver-mcp-server/awslabs/kendra_index_mcpserver_mcp_server",
+        "[absolute path to mcp repo]/src/kendra-index-mcpserver-mcp-server/awslabs/kendra_index_mcpserver_mcp_server",
         "run",
         "server.py"
       ],
