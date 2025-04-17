@@ -1,3 +1,14 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
+# with the License. A copy of the License is located at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
+# OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+
 """awslabs MCP Cost Analysis mcp server implementation.
 
 This server provides tools for analyzing AWS service costs across different user tiers.
@@ -33,12 +44,12 @@ mcp = FastMCP(
        - If web scraping fails, MUST use get_pricing_from_api() to fetch data via AWS Pricing API
 
     3. For Bedrock Services:
-       - When analyzing Amazon Bedrock services, MUST also use get_bedrock_architecture_patterns()
+       - When analyzing Amazon Bedrock services, MUST also use get_bedrock_patterns()
        - This provides critical architecture patterns, component relationships, and cost considerations
        - Especially important for Knowledge Base, Agent, Guardrails, and Data Automation services
 
     4. Report Generation:
-       - MUST generate cost analysis report using retrieved data via generate_cost_analysis_report()
+       - MUST generate cost analysis report using retrieved data via generate_cost_report()
        - The report includes sections for:
          * Service Overview
          * Architecture Pattern (for Bedrock services)
@@ -236,10 +247,10 @@ async def get_pricing_from_api(service_code: str, region: str, ctx: Context) -> 
 
 
 @mcp.tool(
-    name='get_bedrock_architecture_patterns',
+    name='get_bedrock_patterns',
     description='Get architecture patterns for Amazon Bedrock applications, including component relationships and cost considerations',
 )
-async def get_bedrock_architecture_patterns(ctx: Optional[Context] = None) -> str:
+async def get_bedrock_patterns(ctx: Optional[Context] = None) -> str:
     """Get architecture patterns for Amazon Bedrock applications.
 
     This tool provides architecture patterns, component relationships, and cost considerations
@@ -276,7 +287,7 @@ Focus on the most impactful recommendations first. Do not limit yourself to a sp
 
 
 @mcp.tool(
-    name='generate_cost_analysis_report',
+    name='generate_cost_report',
     description="""Generate a detailed cost analysis report based on pricing data for one or more AWS services.
 
 This tool requires AWS pricing data and provides options for adding detailed cost information.
@@ -286,6 +297,10 @@ IMPORTANT REQUIREMENTS:
 - ALWAYS show calculation breakdowns (unit price × usage = total cost)
 - ALWAYS specify the pricing model (e.g., "ON DEMAND")
 - ALWAYS list all assumptions and exclusions explicitly
+
+Output Format Options:
+- 'markdown' (default): Generates a well-formatted markdown report
+- 'csv': Generates a CSV format report with sections for service information, unit pricing, cost calculations, etc.
 
 Example usage:
 
@@ -314,7 +329,8 @@ Example usage:
     "Custom model training costs",
     "Development and maintenance costs"
   ],
-  "output_file": "cost_analysis_report.md",
+  "output_file": "cost_analysis_report.md",  // or "cost_analysis_report.csv" for CSV format
+  "format": "markdown",  // or "csv" for CSV format
 
   // Advanced parameter for complex scenarios
   "detailed_cost_data": {
@@ -367,7 +383,7 @@ Example usage:
 ```
 """,
 )
-async def generate_cost_analysis_report_wrapper(
+async def generate_cost_report_wrapper(
     pricing_data: Dict[str, Any],  # Required: Raw pricing data from AWS
     service_name: str,  # Required: Primary service name
     # Core parameters (simple, commonly used)
@@ -376,6 +392,7 @@ async def generate_cost_analysis_report_wrapper(
     assumptions: Optional[List[str]] = None,
     exclusions: Optional[List[str]] = None,
     output_file: Optional[str] = None,
+    format: str = 'markdown',  # Output format ('markdown' or 'csv')
     # Advanced parameters (grouped in a dictionary for complex use cases)
     detailed_cost_data: Optional[Dict[str, Any]] = None,
     recommendations: Optional[
@@ -399,7 +416,7 @@ async def generate_cost_analysis_report_wrapper(
     - ALWAYS list all assumptions and exclusions explicitly
 
     For Amazon Bedrock services, especially Knowledge Base, Agent, Guardrails, and Data Automation:
-    - Use get_bedrock_architecture_patterns() to understand component relationships and cost considerations
+    - Use get_bedrock_patterns() to understand component relationships and cost considerations
     - For Knowledge Base, account for OpenSearch Serverless minimum OCU requirements (2 OCUs, $345.60/month minimum)
     - For Agent, avoid double-counting foundation model costs (they're included in agent usage)
 
@@ -411,6 +428,10 @@ async def generate_cost_analysis_report_wrapper(
         assumptions: List of assumptions made for the cost analysis
         exclusions: List of items excluded from the cost analysis
         output_file: Path to save the report to a file
+        format: Output format for the cost analysis report
+            - Values: "markdown" (default) or "csv"
+            - markdown: Generates a well-formatted report with tables and sections
+            - csv: Generates a structured data format for spreadsheet compatibility
         detailed_cost_data: Dictionary containing detailed cost information for complex scenarios
             This can include:
             - services: Dictionary mapping service names to their detailed cost information
@@ -425,7 +446,7 @@ async def generate_cost_analysis_report_wrapper(
     """
     # Import and call the implementation from report_generator.py
     from awslabs.cost_analysis_mcp_server.report_generator import (
-        generate_cost_analysis_report,
+        generate_cost_report,
     )
 
     # 1. Extract services from pricing data and parameters
@@ -438,7 +459,7 @@ async def generate_cost_analysis_report_wrapper(
     if 'bedrock' in services.lower():
         try:
             # Get Bedrock architecture patterns
-            bedrock_patterns = await get_bedrock_architecture_patterns(ctx)
+            bedrock_patterns = await get_bedrock_patterns(ctx)
             architecture_patterns['bedrock'] = bedrock_patterns
         except Exception as e:
             if ctx:
@@ -457,7 +478,6 @@ async def generate_cost_analysis_report_wrapper(
         elif 'recommendations' not in detailed_cost_data:
             # Create a default prompt based on the services and context
             architecture_patterns_str = 'Available' if architecture_patterns else 'Not provided'
-
             prompt = DEFAULT_RECOMMENDATION_PROMPT.format(
                 services=services,
                 architecture_patterns=architecture_patterns_str,
@@ -474,7 +494,7 @@ async def generate_cost_analysis_report_wrapper(
             await ctx.warning(f'Could not prepare recommendations: {e}')
 
     # 6. Call the report generator with the enhanced data
-    return await generate_cost_analysis_report(
+    return await generate_cost_report(
         pricing_data=pricing_data,
         service_name=service_name,
         related_services=related_services,
@@ -484,6 +504,7 @@ async def generate_cost_analysis_report_wrapper(
         output_file=output_file,
         detailed_cost_data=detailed_cost_data,
         ctx=ctx,
+        format=format,
     )
 
 
