@@ -29,7 +29,7 @@ mcp = FastMCP(
     ],
 )
 
-
+kendra_index_id = os.getenv('KENDRA_INDEX_ID')
 @mcp.tool(name='MeowExampleTool')
 async def example_tool(
     query: str,
@@ -46,7 +46,6 @@ async def example_tool(
         Dict containing the query results from Amazon Kendra.
     """
     try:
-        kendra_index_id = os.getenv('KENDRA_INDEX_ID')
         # Initialize# Initialize the Kendra client for us-west-2 region
         kendra_client = boto3.client('kendra', region_name='us-west-2')
 
