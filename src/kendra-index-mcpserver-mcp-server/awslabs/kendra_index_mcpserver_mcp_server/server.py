@@ -29,7 +29,7 @@ mcp = FastMCP(
     ],
 )
 
-kendra_index_id = os.getenv('KENDRA_INDEX_ID')
+
 @mcp.tool(name='MeowExampleTool')
 async def example_tool(
     query: str,
@@ -48,7 +48,7 @@ async def example_tool(
     try:
         # Initialize# Initialize the Kendra client for us-west-2 region
         kendra_client = boto3.client('kendra', region_name='us-west-2')
-
+        kendra_index_id = os.getenv('KENDRA_INDEX_ID')
         # Query the Kendra index
         response = kendra_client.query(IndexId=kendra_index_id, QueryText=query)
 

@@ -19,7 +19,8 @@ async def test_example_tool(mocker):
     """Test the example_tool function returns the expected response with mocked Kendra response."""
     # Arrange
     test_query = 'test query'
-
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setenv('KENDRA_INDEX_ID', '123456789')
     # Mock the boto3 client and its query method
     mock_kendra_client = mocker.Mock()
     mock_kendra_response = {
