@@ -19,7 +19,7 @@ This MCP server provides tools to access AWS documentation, search for content, 
 
 ## Installation
 
-To add this MCP server to your Amazon Q or Claude, add the following to your MCP config file. With Amazon Q, create (if does not yet exist) a file named `.amazonq/mcp.json` under the same directory that is running `q chat`. Then add the following config:
+Here are some ways you can work with MCP across AWS, and we'll be adding support to more products including Amazon Q Developer CLI soon: (e.g. for Amazon Q Developer CLI MCP, ~/.aws/amazonq/mcp.json):
 
 ```json
 {
@@ -42,7 +42,7 @@ Example:
  - "look up documentation on S3 bucket naming rule. cite your sources"
  - "recommend content for page https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html"
 
-![AWS Documentation MCP Demo](basic-usage.gif)
+![AWS Documentation MCP Demo](https://github.com/awslabs/mcp/blob/main/src/aws-documentation-mcp-server/basic-usage.gif?raw=true)
 
 
 
