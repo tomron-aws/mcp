@@ -16,7 +16,7 @@ import boto3
 import os
 from loguru import logger
 from mcp.server.fastmcp import FastMCP
-from typing import Any, Dict, Literal
+from typing import Any, Dict
 
 
 mcp = FastMCP(
@@ -47,7 +47,6 @@ async def example_tool(
     """
     kendra_index_id = os.getenv('KENDRA_INDEX_ID')
     try:
-        
         kendra_client = get_kendra_client()
         if not kendra_index_id:
             raise ValueError('KENDRA_INDEX_ID environment variable is not set.')
