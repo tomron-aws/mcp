@@ -30,7 +30,7 @@ mcp = FastMCP(
 )
 
 
-@mcp.tool(name='MeowExampleTool')
+@mcp.tool(name='KendraQueryTool')
 async def example_tool(
     query: str,
 ) -> Dict[str, Any]:
@@ -45,8 +45,9 @@ async def example_tool(
     Returns:
         Dict containing the query results from Amazon Kendra.
     """
+    kendra_index_id = os.getenv('KENDRA_INDEX_ID')
     try:
-        kendra_index_id = os.getenv('KENDRA_INDEX_ID')
+        
         kendra_client = get_kendra_client()
         if not kendra_index_id:
             raise ValueError('KENDRA_INDEX_ID environment variable is not set.')
@@ -85,46 +86,6 @@ async def example_tool(
     except Exception as e:
         logger.error(f'Error querying Kendra: {str(e)}')
         return {'error': str(e), 'query': query, 'index_id': kendra_index_id}
-
-
-@mcp.tool(name='MathTool')
-async def math_tool(
-    operation: Literal['add', 'subtract', 'multiply', 'divide'],
-    a: int | float,
-    b: int | float,
-) -> int | float:
-    """Math tool implementation.
-
-    This tool supports the following operations:
-    - add
-    - subtract
-    - multiply
-    - divide
-
-    Parameters:
-        operation (Literal["add", "subtract", "multiply", "divide"]): The operation to perform.
-        a (int): The first number.
-        b (int): The second number.
-
-    Returns:
-        The result of the operation.
-    """
-    match operation:
-        case 'add':
-            return a + b
-        case 'subtract':
-            return a - b
-        case 'multiply':
-            return a * b
-        case 'divide':
-            try:
-                return a / b
-            except ZeroDivisionError:
-                raise ValueError(f'The denominator {b} cannot be zero.')
-        case _:
-            raise ValueError(
-                f'Invalid operation: {operation} (must be one of: add, subtract, multiply, divide)'
-            )
 
 
 def get_kendra_client():
