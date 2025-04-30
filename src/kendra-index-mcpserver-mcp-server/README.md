@@ -2,16 +2,6 @@
 
 An AWS Labs Model Context Protocol (MCP) server for kendra-index-mcpserver
 
-## TODO
-
-* Remove the examples
-* Add your tool(s)
-* Keep test coverage
-* Document the MCP in this `README.md`
-* Document in the top level `../../README.md`
-* Reference within the `../../doc/index.md`
-* Add include to `../../doc/servers/`
-
 
 Example usage MCP Configuration:
 "awslabs.aws-kendra-index-mcp-server": {
@@ -24,7 +14,9 @@ Example usage MCP Configuration:
       ],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR",
-        "KENDRA_INDEX_ID": "[your kendra index id]"
+        "KENDRA_INDEX_ID": "[Your Kendra Index Id]"
+        "AWS_PROFILE": "[Your AWS Profile Name]",
+        "AWS_REGION": "[Region where your Kendra Index resides]"
       },
       "disabled": false,
       "autoApprove": []
