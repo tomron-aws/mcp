@@ -46,7 +46,6 @@ async def example_tool(
         Dict containing the query results from Amazon Kendra.
     """
     try:
-       
         kendra_index_id = os.getenv('KENDRA_INDEX_ID')
         kendra_client = get_kendra_client()
         if not kendra_index_id:
@@ -126,17 +125,27 @@ async def math_tool(
             raise ValueError(
                 f'Invalid operation: {operation} (must be one of: add, subtract, multiply, divide)'
             )
+
+
 def get_kendra_client():
+    """Get a Kendra runtime client.
+
+    Allows access to Kendra Indexes for RAG via the Kendra runtime client.
+
+    """
     # Initialize the Kendra client with given region or profile
     AWS_PROFILE = os.environ.get('AWS_PROFILE')
     AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
-    
+
     if AWS_PROFILE:
-        kendra_client = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION).client('kendra')
+        kendra_client = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION).client(
+            'kendra'
+        )
         return kendra_client
 
     kendra_client = kendra_client = boto3.client('kendra', region_name=AWS_REGION)
     return kendra_client
+
 
 def main():
     """Run the MCP server with CLI argument support."""
