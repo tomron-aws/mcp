@@ -2,4 +2,4 @@
 title: AWS Kendra Index MCP Server
 ---
 
-{%include "../../src/kendra-index-mcpserver-mcp-server/README.md"%}
+{%include "../../src/amazon-kendra-index-mcp-server/README.md"%}

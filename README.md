@@ -104,7 +104,7 @@ A server for querying an Amazon Kendra Index.
 
 - Query Kendra indices with natural language to give additional knowledge to your AI tool from Kendra
 
-[Learn more](src/kendra-index-mcpserver-mcp-server/README.md) | [Documentation](https://awslabs.github.io/mcp/servers/kendra-index-mcp-server/)
+[Learn more](src/amazon-kendra-index-mcp-server/README.md) | [Documentation](https://awslabs.github.io/mcp/servers/kendra-index-mcp-server/)
 
 ### Amazon Bedrock Knowledge Bases Retrieval MCP Server
 
