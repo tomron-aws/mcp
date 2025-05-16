@@ -1,4 +1,4 @@
-# awslabs amazon-kendra-index-mcp-server MCP Server
+# AWS Labs Amazon Kendra Index MCP Server
 
 An AWS Labs Model Context Protocol (MCP) server for Amazon Kendra. This MCP server allows you to use a Kendra Index as additional context for RAG. 
 
