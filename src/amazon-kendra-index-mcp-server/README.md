@@ -23,7 +23,7 @@ An AWS Labs Model Context Protocol (MCP) server for Amazon Kendra. This MCP serv
   - The KendraQueryTool takes the query specified by the user and queries a Kendra index to gain additional context for the response. This queries either the default index, or an index specified in the users prompt.
   - Required Parameters: query (str)
   - Optional Parameters: indexId (str), region (str)
-  - Example: 
+  - Example:
     * `Can you help me understand how to implement a progress event in the CreateHandler using Java? Use the KendraQueryTool to gain additional context.`
     * `Can you use the test-kendra-index to help answer the following questions...`
 
@@ -31,7 +31,7 @@ An AWS Labs Model Context Protocol (MCP) server for Amazon Kendra. This MCP serv
 
   - The KendraListIndexesTool lists the Kendra Indexes in your account. By default it will list all the indices in the regions provided as environment variables to the mcp config file. Otherwise the region can bev specified in the prompt.
   - Optional Parameters: region (str)
-  - Example: 
+  - Example:
     * `Can you list the Kendra Indexes in my account in the us-west-2 region`
 
 
