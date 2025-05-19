@@ -30,24 +30,91 @@ mcp = FastMCP(
 )
 
 
+@mcp.tool(name='KendraListIndexesTool')
+async def list_kendra_indexes(
+    region: str = None,
+) -> Dict[str, Any]:
+    """List all Amazon Kendra indexes in the specified region.
+
+    This tool lists all the Kendra indexes available in the region specified in the mcp configuration.
+
+    Parameters:
+        region (str, optional): The AWS region to list Kendra indexes from.
+
+    Returns:
+        Dict containing the list of Kendra indexes.
+    """
+    try:
+        if region:
+            kendra_client = get_kendra_client(region)
+        else: 
+            kendra_client = get_kendra_client()
+        
+        # List all Kendra indexes
+        response = kendra_client.list_indices()
+        
+        # Process and return the results
+        indexes = []
+        for index in response.get('IndexConfigurationSummaryItems', []):
+            index_info = {
+                'id': index.get('Id'),
+                'name': index.get('Name'),
+                'status': index.get('Status'),
+                'created_at': index.get('CreatedAt').isoformat() if index.get('CreatedAt') else None,
+                'updated_at': index.get('UpdatedAt').isoformat() if index.get('UpdatedAt') else None,
+                'edition': index.get('Edition')
+            }
+            indexes.append(index_info)
+            
+        # Handle pagination if there are more results
+        next_token = response.get('NextToken')
+        while next_token:
+            response = kendra_client.list_indices(NextToken=next_token)
+            for index in response.get('IndexConfigurationSummaryItems', []):
+                index_info = {
+                    'id': index.get('Id'),
+                    'name': index.get('Name'),
+                    'status': index.get('Status'),
+                    'created_at': index.get('CreatedAt').isoformat() if index.get('CreatedAt') else None,
+                    'updated_at': index.get('UpdatedAt').isoformat() if index.get('UpdatedAt') else None,
+                    'edition': index.get('Edition')
+                }
+                indexes.append(index_info)
+            next_token = response.get('NextToken')
+            
+        return {
+            'region': region or os.environ.get('AWS_REGION', 'us-east-1'),
+            'count': len(indexes),
+            'indexes': indexes
+        }
+        
+    except Exception as e:
+        return {'error': str(e), 'region': region or os.environ.get('AWS_REGION', 'us-east-1')}
+
+
 @mcp.tool(name='KendraQueryTool')
 async def example_tool(
     query: str,
-) -> Dict[str, Any]:
+    region: str = None,
+    indexId: str = None,) -> Dict[str, Any]:
     """Query Amazon Kendra and retrieve content from the response.
 
-    This tool queries the specified Amazon Kendra index configured in the environemnt variables with the provided query
-    and returns the search results.
+    This tool queries the specified Amazon Kendra index with the provided query
+    and returns the search results. The specified Kendra Index is either provided by the user in the chat, or the default index configured in the environemnt variables 
 
     Parameters:
         query (str): The search query to send to Amazon Kendra.
-
+        region (str): The region of the Kendra Index to send the search query to.
+        indexId (str): The indexId of the Kendra index to send the search query to.
     Returns:
         Dict containing the query results from Amazon Kendra.
     """
-    kendra_index_id = os.getenv('KENDRA_INDEX_ID')
+    kendra_index_id = indexId or os.getenv('KENDRA_INDEX_ID')
     try:
-        kendra_client = get_kendra_client()
+        if region:
+            kendra_client = get_kendra_client(region)
+        else: 
+            kendra_client = get_kendra_client()
         if not kendra_index_id:
             raise ValueError('KENDRA_INDEX_ID environment variable is not set.')
         # Query the Kendra index
@@ -83,11 +150,10 @@ async def example_tool(
         return results
 
     except Exception as e:
-        logger.error(f'Error querying Kendra: {str(e)}')
         return {'error': str(e), 'query': query, 'index_id': kendra_index_id}
 
 
-def get_kendra_client():
+def get_kendra_client(region = None):
     """Get a Kendra runtime client.
 
     Allows access to Kendra Indexes for RAG via the Kendra runtime client.
@@ -95,8 +161,7 @@ def get_kendra_client():
     """
     # Initialize the Kendra client with given region or profile
     AWS_PROFILE = os.environ.get('AWS_PROFILE')
-    AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
-
+    AWS_REGION = region or os.environ.get('AWS_REGION', 'us-east-1')
     if AWS_PROFILE:
         kendra_client = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION).client(
             'kendra'
@@ -116,14 +181,6 @@ def main():
     parser.add_argument('--port', type=int, default=8888, help='Port to run the server on')
 
     args = parser.parse_args()
-
-    logger.trace('A trace message.')
-    logger.debug('A debug message.')
-    logger.info('An info message.')
-    logger.success('A success message.')
-    logger.warning('A warning message.')
-    logger.error('An error message.')
-    logger.critical('A critical message.')
 
     # Run server with appropriate transport
     if args.sse:
