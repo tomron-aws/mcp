@@ -32,7 +32,7 @@ from awslabs.dynamodb_mcp_server.common import (
     handle_exceptions,
 )
 from botocore.config import Config
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 from typing import Any, Dict, List, Literal, Union
 
@@ -40,7 +40,7 @@ from typing import Any, Dict, List, Literal, Union
 app = FastMCP(
     name='dynamodb-server',
     instructions='The official MCP Server for interacting with AWS DynamoDB',
-    version='0.1.0',
+    version='0.1.1',
 )
 
 
@@ -802,5 +802,10 @@ async def update_continuous_backups(
     return response['ContinuousBackupsDescription']
 
 
-if __name__ == '__main__':
+def main():
+    """Main entry point for the MCP server application."""
     app.run()
+
+
+if __name__ == '__main__':
+    main()
