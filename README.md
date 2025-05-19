@@ -159,10 +159,10 @@ A server for accessing AWS documentation and best practices.
 
 [![PyPI version](https://img.shields.io/pypi/v/awslabs.amazon-kendra-index-mcp-server.svg)](https://pypi.org/project/awslabs.amazon-kendra-index-mcp-server/)
 
-A server for querying an Amazon Kendra Index.
+A server for listing and querying Amazon Kendra Indexes
 
-- List the Kendra indices in your account.
-- Query Kendra indices with natural language to give additional context to your AI tool from Kendra.
+- List the Kendra indexes in your account.
+- Query Kendra indexes with natural language to give additional RAG context to your AI tool.
 
 [Learn more](src/amazon-kendra-index-mcp-server/README.md) | [Documentation](https://awslabs.github.io/mcp/servers/amazon-kendra-index-mcp-server/)
 
