@@ -11,7 +11,8 @@
 """Tests for the amazon-kendra-index-mcp-server MCP Server."""
 
 import pytest
-from awslabs.amazon_kendra_index_mcp_server.server import example_tool
+from awslabs.amazon_kendra_index_mcp_server.server import example_tool, list_kendra_indexes
+from datetime import datetime
 
 
 @pytest.mark.asyncio
@@ -119,3 +120,174 @@ async def test_example_tool_error_handling(mocker):
     # Assert
     assert result == expected_error_response
     mock_kendra_client.query.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_list_kendra_indexes(mocker):
+    """Test the list_kendra_indexes function returns the expected response with mocked Kendra response."""
+    # Arrange
+    test_region = 'us-west-2'
+    created_at = datetime(2023, 1, 1, 12, 0, 0)
+    updated_at = datetime(2023, 2, 1, 12, 0, 0)
+
+    # Mock the boto3 client and its list_indices method
+    mock_kendra_client = mocker.Mock()
+    mock_kendra_response = {
+        'IndexConfigurationSummaryItems': [
+            {
+                'Id': 'index-1',
+                'Name': 'Test Index 1',
+                'Status': 'ACTIVE',
+                'CreatedAt': created_at,
+                'UpdatedAt': updated_at,
+                'Edition': 'DEVELOPER_EDITION',
+            },
+            {
+                'Id': 'index-2',
+                'Name': 'Test Index 2',
+                'Status': 'UPDATING',
+                'CreatedAt': created_at,
+                'UpdatedAt': updated_at,
+                'Edition': 'ENTERPRISE_EDITION',
+            },
+        ]
+    }
+
+    mock_kendra_client.list_indices.return_value = mock_kendra_response
+    mocker.patch('boto3.client', return_value=mock_kendra_client)
+
+    # Expected result based on the mock response
+    expected_result = {
+        'region': test_region,
+        'count': 2,
+        'indexes': [
+            {
+                'id': 'index-1',
+                'name': 'Test Index 1',
+                'status': 'ACTIVE',
+                'created_at': created_at.isoformat(),
+                'updated_at': updated_at.isoformat(),
+                'edition': 'DEVELOPER_EDITION',
+            },
+            {
+                'id': 'index-2',
+                'name': 'Test Index 2',
+                'status': 'UPDATING',
+                'created_at': created_at.isoformat(),
+                'updated_at': updated_at.isoformat(),
+                'edition': 'ENTERPRISE_EDITION',
+            },
+        ],
+    }
+
+    # Act
+    result = await list_kendra_indexes(region=test_region)
+
+    # Assert
+    assert result == expected_result
+    mock_kendra_client.list_indices.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_list_kendra_indexes_pagination(mocker):
+    """Test the list_kendra_indexes function handles pagination correctly."""
+    # Arrange
+    test_region = 'us-west-2'
+    created_at = datetime(2023, 1, 1, 12, 0, 0)
+    updated_at = datetime(2023, 2, 1, 12, 0, 0)
+
+    # Mock the boto3 client and its list_indices method with pagination
+    mock_kendra_client = mocker.Mock()
+
+    # First response with NextToken
+    first_response = {
+        'IndexConfigurationSummaryItems': [
+            {
+                'Id': 'index-1',
+                'Name': 'Test Index 1',
+                'Status': 'ACTIVE',
+                'CreatedAt': created_at,
+                'UpdatedAt': updated_at,
+                'Edition': 'DEVELOPER_EDITION',
+            }
+        ],
+        'NextToken': 'next-page-token',
+    }
+
+    # Second response without NextToken
+    second_response = {
+        'IndexConfigurationSummaryItems': [
+            {
+                'Id': 'index-2',
+                'Name': 'Test Index 2',
+                'Status': 'UPDATING',
+                'CreatedAt': created_at,
+                'UpdatedAt': updated_at,
+                'Edition': 'ENTERPRISE_EDITION',
+            }
+        ]
+    }
+
+    # Configure mock to return different responses
+    mock_kendra_client.list_indices.side_effect = [first_response, second_response]
+    mocker.patch('boto3.client', return_value=mock_kendra_client)
+
+    # Expected result combining both responses
+    expected_result = {
+        'region': test_region,
+        'count': 2,
+        'indexes': [
+            {
+                'id': 'index-1',
+                'name': 'Test Index 1',
+                'status': 'ACTIVE',
+                'created_at': created_at.isoformat(),
+                'updated_at': updated_at.isoformat(),
+                'edition': 'DEVELOPER_EDITION',
+            },
+            {
+                'id': 'index-2',
+                'name': 'Test Index 2',
+                'status': 'UPDATING',
+                'created_at': created_at.isoformat(),
+                'updated_at': updated_at.isoformat(),
+                'edition': 'ENTERPRISE_EDITION',
+            },
+        ],
+    }
+
+    # Act
+    result = await list_kendra_indexes(region=test_region)
+
+    # Assert
+    assert result == expected_result
+    assert mock_kendra_client.list_indices.call_count == 2
+    # First call without NextToken
+    mock_kendra_client.list_indices.assert_any_call()
+    # Second call with NextToken
+    mock_kendra_client.list_indices.assert_any_call(NextToken='next-page-token')
+
+
+@pytest.mark.asyncio
+async def test_list_kendra_indexes_error_handling(mocker):
+    """Test the list_kendra_indexes function handles errors from Kendra client."""
+    # Arrange
+    test_region = 'us-west-2'
+
+    # Mock boto3 client to raise an exception
+    mock_kendra_client = mocker.Mock()
+    mock_kendra_client.list_indices.side_effect = Exception('Kendra service error')
+    mocker.patch('boto3.client', return_value=mock_kendra_client)
+
+    # Expected error response
+    expected_error_response = {
+        'error': 'Kendra service error',
+        'region': test_region,
+    }
+
+    # Act
+    result = await list_kendra_indexes(region=test_region)
+
+    # Assert
+    assert result == expected_error_response
+    mock_kendra_client.list_indices.assert_called_once()
