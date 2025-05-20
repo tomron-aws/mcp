@@ -40,6 +40,7 @@ changelog = "https://github.com/awslabs/mcp/blob/main/src/amazon-kendra-index-mc
 
 [dependency-groups]
 dev = [
+    "boto3-stubs[kendra]",
     "commitizen>=4.2.2",
     "pre-commit>=4.1.0",
     "ruff>=0.9.7",
