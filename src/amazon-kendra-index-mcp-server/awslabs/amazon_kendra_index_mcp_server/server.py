@@ -16,6 +16,7 @@ import boto3
 import os
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, Optional
+from util import get_kendra_client
 
 
 mcp = FastMCP(
@@ -161,24 +162,6 @@ async def kendra_query_tool(
     except Exception as e:
         return {'error': str(e), 'query': query, 'index_id': kendra_index_id}
 
-
-def get_kendra_client(region=None):
-    """Get a Kendra runtime client.
-
-    Allows access to Kendra Indexes for RAG via the Kendra runtime client.
-
-    """
-    # Initialize the Kendra client with given region or profile
-    AWS_PROFILE = os.environ.get('AWS_PROFILE')
-    AWS_REGION = region or os.environ.get('AWS_REGION', 'us-east-1')
-    if AWS_PROFILE:
-        kendra_client = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION).client(
-            'kendra'
-        )
-        return kendra_client
-
-    kendra_client = kendra_client = boto3.client('kendra', region_name=AWS_REGION)
-    return kendra_client
 
 
 def main():
