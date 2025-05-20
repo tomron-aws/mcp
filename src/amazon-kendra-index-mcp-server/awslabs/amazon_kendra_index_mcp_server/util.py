@@ -12,9 +12,10 @@
 
 import boto3
 import os
+from mypy_boto3_kendra.client import KendraClient
 
 
-def get_kendra_client(region=None) -> 'boto3.client':
+def get_kendra_client(region=None) -> KendraClient:
     """Get a Kendra runtime client.
 
     Allows access to Kendra Indexes for RAG via the Kendra runtime client.
