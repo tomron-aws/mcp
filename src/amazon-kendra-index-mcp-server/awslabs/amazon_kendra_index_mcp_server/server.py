@@ -13,9 +13,9 @@
 
 import argparse
 import os
+from .util import get_kendra_client
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, Optional
-from util import get_kendra_client
 
 
 mcp = FastMCP(
