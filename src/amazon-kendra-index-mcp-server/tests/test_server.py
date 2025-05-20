@@ -11,8 +11,11 @@
 """Tests for the amazon-kendra-index-mcp-server MCP Server."""
 
 import pytest
+from awslabs.amazon_kendra_index_mcp_server.server import (
+    kendra_list_indexes_tool,
+    kendra_query_tool,
+)
 from datetime import datetime
-from awslabs.amazon_kendra_index_mcp_server.server import kendra_query_tool, kendra_list_indexes_tool
 
 
 @pytest.mark.asyncio

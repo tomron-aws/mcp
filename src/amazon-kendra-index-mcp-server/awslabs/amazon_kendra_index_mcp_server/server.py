@@ -12,7 +12,6 @@
 """awslabs amazon-kendra-index-mcp-server MCP Server implementation."""
 
 import argparse
-import boto3
 import os
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, Optional
@@ -161,7 +160,6 @@ async def kendra_query_tool(
 
     except Exception as e:
         return {'error': str(e), 'query': query, 'index_id': kendra_index_id}
-
 
 
 def main():

@@ -10,10 +10,9 @@
 # and limitations under the License.
 """Utility functions for AWS Documentation MCP Server."""
 
-import markdownify
-from typing import Any, Dict, List
 import boto3
 import os
+
 
 def get_kendra_client(region=None) -> boto3.client:
     """Get a Kendra runtime client.
