@@ -30,7 +30,7 @@ mcp = FastMCP(
 
 
 @mcp.tool(name='KendraListIndexesTool')
-async def list_kendra_indexes(
+async def kendra_list_indexes_tool(
     region: Optional[str] = None,
 ) -> Dict[str, Any]:
     """List all Amazon Kendra indexes in the specified region.
@@ -100,7 +100,7 @@ async def list_kendra_indexes(
 
 
 @mcp.tool(name='KendraQueryTool')
-async def example_tool(
+async def kendra_query_tool(
     query: str,
     region: Optional[str] = None,
     indexId: Optional[str] = None,

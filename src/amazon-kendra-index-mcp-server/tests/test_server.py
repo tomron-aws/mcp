@@ -11,13 +11,13 @@
 """Tests for the amazon-kendra-index-mcp-server MCP Server."""
 
 import pytest
-from awslabs.amazon_kendra_index_mcp_server.server import example_tool, list_kendra_indexes
 from datetime import datetime
+from awslabs.amazon_kendra_index_mcp_server.server import kendra_query_tool, kendra_list_indexes_tool
 
 
 @pytest.mark.asyncio
-async def test_example_tool(mocker):
-    """Test the example_tool function returns the expected response with mocked Kendra response."""
+async def test_kendra_query_tool(mocker):
+    """Test the kendra_query_tool function returns the expected response with mocked Kendra response."""
     # Arrange
     test_query = 'test query'
     monkeypatch = pytest.MonkeyPatch()
@@ -86,7 +86,7 @@ async def test_example_tool(mocker):
     }
 
     # Act
-    result = await example_tool(test_query)
+    result = await kendra_query_tool(test_query)
 
     # Assert
     assert result == expected_result
@@ -94,8 +94,8 @@ async def test_example_tool(mocker):
 
 
 @pytest.mark.asyncio
-async def test_example_tool_error_handling(mocker):
-    """Test the example_tool function handles errors from Kendra client."""
+async def test_kendra_query_tool_error_handling(mocker):
+    """Test the kendra_query_tool function handles errors from Kendra client."""
     # Arrange
     test_query = 'test query'
 
@@ -115,7 +115,7 @@ async def test_example_tool_error_handling(mocker):
     }
 
     # Act
-    result = await example_tool(test_query)
+    result = await kendra_query_tool(test_query)
 
     # Assert
     assert result == expected_error_response
@@ -123,8 +123,8 @@ async def test_example_tool_error_handling(mocker):
 
 
 @pytest.mark.asyncio
-async def test_list_kendra_indexes(mocker):
-    """Test the list_kendra_indexes function returns the expected response with mocked Kendra response."""
+async def test_kendra_list_indexes_tool(mocker):
+    """Test the kendra_list_indexes_tool function returns the expected response with mocked Kendra response."""
     # Arrange
     test_region = 'us-west-2'
     created_at = datetime(2023, 1, 1, 12, 0, 0)
@@ -181,7 +181,7 @@ async def test_list_kendra_indexes(mocker):
     }
 
     # Act
-    result = await list_kendra_indexes(region=test_region)
+    result = await kendra_list_indexes_tool(region=test_region)
 
     # Assert
     assert result == expected_result
@@ -189,8 +189,8 @@ async def test_list_kendra_indexes(mocker):
 
 
 @pytest.mark.asyncio
-async def test_list_kendra_indexes_pagination(mocker):
-    """Test the list_kendra_indexes function handles pagination correctly."""
+async def test_kendra_list_indexes_tool_pagination(mocker):
+    """Test the kendra_list_indexes_tool function handles pagination correctly."""
     # Arrange
     test_region = 'us-west-2'
     created_at = datetime(2023, 1, 1, 12, 0, 0)
@@ -257,7 +257,7 @@ async def test_list_kendra_indexes_pagination(mocker):
     }
 
     # Act
-    result = await list_kendra_indexes(region=test_region)
+    result = await kendra_list_indexes_tool(region=test_region)
 
     # Assert
     assert result == expected_result
@@ -269,8 +269,8 @@ async def test_list_kendra_indexes_pagination(mocker):
 
 
 @pytest.mark.asyncio
-async def test_list_kendra_indexes_error_handling(mocker):
-    """Test the list_kendra_indexes function handles errors from Kendra client."""
+async def test_lkendra_list_indexes_tool_error_handling(mocker):
+    """Test the kendra_list_indexes_tool function handles errors from Kendra client."""
     # Arrange
     test_region = 'us-west-2'
 
@@ -286,7 +286,7 @@ async def test_list_kendra_indexes_error_handling(mocker):
     }
 
     # Act
-    result = await list_kendra_indexes(region=test_region)
+    result = await kendra_list_indexes_tool(region=test_region)
 
     # Assert
     assert result == expected_error_response
