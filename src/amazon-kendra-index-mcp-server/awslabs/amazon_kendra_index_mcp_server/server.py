@@ -13,14 +13,14 @@
 
 import argparse
 import os
-from awslabs.amazon_kendra_index_mcp_server.util import get_kendra_client
+from awslabs.amazon_kendra_index_mcp_server.util import get_kendra_client, get_qbusiness_client, get_identity_aware_qbusiness_client
 from mcp.server.fastmcp import FastMCP
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 mcp = FastMCP(
     'awslabs.amazon-kendra-index-mcp-server',
-    instructions='Using the users kendra index id as a parameter, query Amazon Kendra with the provided search query',
+    instructions='Using the users kendra index id as a parameter, query Amazon Kendra with the provided search query, list Amazon Q Business applications in the user\'s account, or search Amazon Q Business applications for relevant content',
     dependencies=[
         'pydantic',
         'loguru',
