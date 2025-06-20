@@ -238,8 +238,8 @@ async def qbusiness_chat_sync_tool(
             },
             'authChallengeResponse': {
                 'responseMap': {
-                    'access_token': '00Dbm00000Iyskm!AQEAQLU_nn3W2.LPFwxYO2mC5874YKBNx0',
-                    'instance_url': 'https://aws200-dev-ed.develop.lightning.force.com/services/data/v60.0'
+                    'access_token': '...',
+                    'instance_url': '...'
                 }
             }
         }
